@@ -1,0 +1,66 @@
+[
+    {
+        "input": "What are the top 5 projects by total logged hours for the Data Platform, Data Services, Personal projects, and Joon Team project categories in the last 3 months?",
+        "output": "fields=fct__jira__worklogs.total_logged_hours,worklog_creator.name,fct__jira__worklogs.started_date&pivots=fct__jira__worklogs.started_date&fill_fields=fct__jira__worklogs.started_date&f[fct__jira__issue.project_name]=&f[worklog_creator.group_name]=&f[fct__jira__worklogs.started_date_filter]=3 month&f[fct__jira__issue.project_category_name]=Data Platform,Data Services,Personal projects,Joon Team&f[fct__jira__issue.task_type]=&sorts=fct__jira__worklogs.started_date,fct__jira__worklogs.total_logged_hours desc 0&limit=5&column_limit=50&total=on"
+    },
+    {
+        "input": "",
+        "output": "fields=fct__jira__issue.project_key,fct__jira__issue.upper_limit_of_project,fct__jira__issue.lower_limit_of_project,fct__jira__worklogs.total_billable_hours,fct__jira__issue.ratio_bill_vs_upper_limit,fct__jira__issue.ratio_bill_vs_lower_limit,fct__jira__issue.is_fixed_scope,fct__jira__worklogs.total_logged_hours,fct__jira__worklogs.project_billable_rate&f[fct__jira__worklogs.started_date]=this month&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=500&column_limit=50&vis={\"type\":\"table\"}"
+    },
+    {
+        "input": "What are the top 5 projects with the most logged hours in the last 3 months?",
+        "output": "fields=fct__jira__worklogs.total_logged_hours,fct__jira__issue.project_name&pivots=fct__jira__issue.project_name&fill_fields=fct__jira__issue.project_name&f[fct__jira__worklogs.started_date_filter]=3 month&f[fct__jira__issue.project_category_name]=Data Platform,Data Services,Personal projects,Joon Team&f[fct__jira__issue.task_type]=&sorts=fct__jira__worklogs.total_logged_hours desc 0&limit=5&column_limit=50&total=on"
+    },
+    {
+        "input": "total billable hours by engineer",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,worklog_creator.name&f[fct__jira__worklogs.started_date_filter]=this+quarter&f[fct__jira__worklogs.date_granularity]=month&f[fct__jira__worklogs.date]=-NULL&f[worklog_creator.is_active]=Yes&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5000"
+    },
+    {
+        "input": "What are the total billable hours for each engineer this quarter?",
+        "output": "..."
+    },
+    {
+        "input": "What are the top 5 projects by total billable hours for the current quarter?",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,fct__jira__issue.project_name&f[fct__jira__worklogs.started_date_filter]=this+quarter&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5"
+    },
+    {
+        "input": "What are the top 5 projects with the most billable hours this month?",
+        "output": "fields=fct__jira__issue.project_name,fct__jira__worklogs.total_billable_hours&pivots=fct__jira__issue.project_name&f[fct__jira__worklogs.started_date_filter]=this month&f[fct__jira__worklogs.date_granularity]=month&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5&column_limit=50&total=on&row_total=right"
+    },
+    {
+        "input": "What is the average billable rate for engineers in the 'the-cool-pod' group this month?",
+        "output": "fields=fct__jira__worklogs.billable_rate,worklog_creator.name&f[worklog_creator.group_name]=the-cool-pod&f[fct__jira__worklogs.started_date_filter]=this month&f[fct__jira__worklogs.date_granularity]=month&sorts=worklog_creator.name,fct__jira__worklogs.billable_rate desc 0&limit=500&column_limit=50&total=on&row_total=right&dynamic_fields=[{\"args\":[\"fct__jira__worklogs.billable_rate\"],\"calculation_type\":\"average\",\"category\":\"table_calculation\",\"based_on\":\"fct__jira__worklogs.billable_rate\",\"label\":\"Average billable rate\",\"source_field\":\"fct__jira__worklogs.billable_rate\",\"table_calculation\":\"average\",\"value_format\":null,\"value_format_name\":\"number_0\",\"_kind_hint\":\"measure\",\"_type_hint\":\"number\"}]"
+    },
+    {
+        "input": "What are the top 5 products by revenue for the month of January?",
+        "output": "fields=fct__sales.product_name,fct__sales.revenue&f[fct__sales.date_filter]=2023-01-01 2023-01-31&sorts=fct__sales.revenue desc 0&limit=5"
+    },
+    {
+        "input": "What are the top 10 most used SQL functions in the last 3 months?",
+        "output": "fields=fct__jira__worklogs.sql_functions&f[fct__jira__worklogs.started_date_filter]=last 3 months&sorts=fct__jira__worklogs.sql_functions desc 10&limit=10"
+    },
+    {
+        "input": "total billable hours by engineer",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,worklog_creator.name&f[fct__jira__worklogs.started_date_filter]=this+quarter&f[fct__jira__worklogs.date_granularity]=month&f[fct__jira__worklogs.date]=-NULL&f[worklog_creator.is_active]=Yes&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5000"
+    },
+    {
+        "input": "What are the top 5 projects by logged hours in the last 3 months?",
+        "output": "fields=fct__jira__worklogs.total_logged_hours,fct__jira__issue.project_name&pivots=fct__jira__issue.project_name&fill_fields=fct__jira__issue.project_name&f[fct__jira__worklogs.started_date_filter]=3 month&f[fct__jira__issue.project_category_name]=Data Platform,Data Services,Personal projects,Joon Team&f[fct__jira__issue.task_type]=&sorts=fct__jira__worklogs.total_logged_hours desc 0&limit=5&column_limit=50&total=on"
+    },
+    {
+        "input": "What are the top 5 engineers with the most billable hours this month?",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,worklog_creator.name&f[fct__jira__worklogs.started_date_filter]=this+month&f[fct__jira__worklogs.date_granularity]=day&f[fct__jira__worklogs.date]=-NULL&f[worklog_creator.is_active]=Yes&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5"
+    },
+    {
+        "input": "total billable hours by engineer",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,worklog_creator.name&f[fct__jira__worklogs.started_date_filter]=this+quarter&f[fct__jira__worklogs.date_granularity]=month&f[fct__jira__worklogs.date]=-NULL&f[worklog_creator.is_active]=Yes&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5000"
+    },
+    {
+        "input": "What are the top 5 projects with the most billable hours this month?",
+        "output": "fields=fct__jira__issue.project_name,fct__jira__worklogs.total_billable_hours&pivots=fct__jira__issue.project_name&f[fct__jira__worklogs.started_date_filter]=this month&f[fct__jira__worklogs.date_granularity]=month&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5"
+    },
+    {
+        "input": "What is the total billable hours by engineer for the current quarter?",
+        "output": "fields=fct__jira__worklogs.total_billable_hours,worklog_creator.name&f[fct__jira__worklogs.started_date_filter]=this+quarter&f[fct__jira__worklogs.date_granularity]=month&f[fct__jira__worklogs.date]=-NULL&f[worklog_creator.is_active]=Yes&sorts=fct__jira__worklogs.total_billable_hours desc 0&limit=5000"
+    }
+]

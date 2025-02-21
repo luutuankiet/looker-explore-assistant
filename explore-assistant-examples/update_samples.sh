@@ -2,7 +2,7 @@
 
 source .env
 TABLE_ID="explore_assistant_samples"         ##The ID of the BigQuery table where the data will be inserted. Set to explore_assistant_samples.
-JSON_FILE="samples.json"                     ##The path to the JSON file containing the data to be loaded. Set to samples.json.
+JSON_FILE="samples_jira.json"                     ##The path to the JSON file containing the data to be loaded. Set to samples.json.
 
 python load_examples.py \
 --project_id $PROJECT_ID \

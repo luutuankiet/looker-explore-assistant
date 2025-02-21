@@ -1,0 +1,139 @@
+
+  Dimensions Used to group by information:
+ name: fct__gsheet__joon_netnew_project_tracking.id, type: string, description:  
+name: fct__jira__issue.assignee_id, type: string, description: ID of issue assignee 
+name: fct__jira__issue.created_date, type: date_date, description: Created time 
+name: fct__jira__issue.created_month, type: date_month, description: Created time 
+name: fct__jira__issue.created_quarter, type: date_quarter, description: Created time 
+name: fct__jira__issue.created_raw, type: date_raw, description: Created time 
+name: fct__jira__issue.created_time, type: date_time, description: Created time 
+name: fct__jira__issue.created_week, type: date_week, description: Created time 
+name: fct__jira__issue.created_year, type: date_year, description: Created time 
+name: fct__jira__issue.creator_id, type: string, description: ID of issue creator 
+name: fct__jira__issue.days_from_creation_to_resolution, type: duration_day, description: The elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.days_ticket_open, type: duration_day, description: If tickets are done: the elapsed time from ticket creation to ticket resolution. Otherwise: the elapsed time from ticket creation to current time 
+name: fct__jira__issue.due_date, type: date_date, description: Issue due date 
+name: fct__jira__issue.due_month, type: date_month, description: Issue due date 
+name: fct__jira__issue.due_quarter, type: date_quarter, description: Issue due date 
+name: fct__jira__issue.due_raw, type: date_raw, description: Issue due date 
+name: fct__jira__issue.due_week, type: date_week, description: Issue due date 
+name: fct__jira__issue.due_year, type: date_year, description: Issue due date 
+name: fct__jira__issue.hours_from_creation_to_resolution, type: duration_hour, description: The elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.hours_ticket_open, type: duration_hour, description: If tickets are done: the elapsed time from ticket creation to ticket resolution. Otherwise: the elapsed time from ticket creation to current time 
+name: fct__jira__issue.is_completed, type: yesno, description: Whether a ticket's status has changed to DONE 
+name: fct__jira__issue.is_open_within_10days, type: yesno, description: Whether the elapsed time from ticket creation to ticket resolution (finished tickets/ current time (unfinished tickets) is lesser than or equal to 10 days 
+name: fct__jira__issue.issue_id, type: number, description: ID of Jira issue 
+name: fct__jira__issue.issue_key, type: string, description: Jira Issue Key 
+name: fct__jira__issue.status_name, type: string, description: Issue status 
+name: fct__jira__issue.issue_summary, type: string, description: Issue summary 
+name: fct__jira__issue.issue_type_name, type: string, description: Issue type 
+name: fct__jira__issue.issue_description, type: string, description: Issue description 
+name: fct__jira__issue.months_from_creation_to_resolution, type: duration_month, description: The elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.months_ticket_open, type: duration_month, description: If tickets are done: the elapsed time from ticket creation to ticket resolution. Otherwise: the elapsed time from ticket creation to current time 
+name: fct__jira__issue.non_billable_hours, type: string, description:  
+name: fct__jira__issue.original_estimate, type: number, description: Original estimate time 
+name: fct__jira__issue.parent_issue_description, type: string, description: Parent Issue description 
+name: fct__jira__issue.parent_issue_id, type: number, description: parent Issue ID 
+name: fct__jira__issue.parent_issue_key, type: string, description: Parent issue key 
+name: fct__jira__issue.parent_issue_original_estimate, type: number, description: Original estimate time of parent issue 
+name: fct__jira__issue.parent_issue_priority_description, type: string, description: Priority description of Parent Issue 
+name: fct__jira__issue.parent_issue_priority_name, type: string, description: Priority name of Parent Issue 
+name: fct__jira__issue.parent_issue_remaining_estimate, type: number, description: Total remaining estimate time (original estimate - time spent) of parent issue 
+name: fct__jira__issue.parent_issue_resolution_name, type: string, description: Resolution name of parent issue 
+name: fct__jira__issue.parent_issue_status_name, type: string, description: Parent Issue Status 
+name: fct__jira__issue.parent_issue_status_category_name, type: string, description: Status category of Parent Issue 
+name: fct__jira__issue.parent_issue_status_description, type: string, description: Status description of Parent Issue 
+name: fct__jira__issue.parent_issue_summary, type: string, description: Parent issue summary 
+name: fct__jira__issue.parent_issue_time_spent, type: number, description: Total time logged in parent issue 
+name: fct__jira__issue.parent_issue_type_name, type: string, description: Issue type of parent Issue 
+name: fct__jira__issue.priority_description, type: string, description: Issue priority description 
+name: fct__jira__issue.priority_name, type: string, description: issue priority name 
+name: fct__jira__issue.project_category_name, type: string, description: Project Category which is defined in project settings 
+name: fct__jira__issue.project_id, type: number, description: Issue Project ID 
+name: fct__jira__issue.project_key, type: string, description: Project Key 
+name: fct__jira__issue.project_name, type: string, description: Project Name 
+name: fct__jira__issue.remaining_estimate, type: number, description: Total remaining estimate time (original estimate - time spent) 
+name: fct__jira__issue.reporter_id, type: string, description: ID of issue reporter 
+name: fct__jira__issue.resolution_date, type: date_date, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_month, type: date_month, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_name, type: string, description: Resolution name 
+name: fct__jira__issue.resolution_quarter, type: date_quarter, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_raw, type: date_raw, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_time, type: date_time, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_week, type: date_week, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.resolution_year, type: date_year, description: Time when the ticket's status changed to DONE. Open tickets have resolution_at = null 
+name: fct__jira__issue.status_category_name, type: string, description: Issue status category 
+name: fct__jira__issue.status_description, type: string, description: Issue status description 
+name: fct__jira__issue.task_category, type: string, description:  
+name: fct__jira__issue.task_type, type: string, description:  
+name: fct__jira__issue.time_spent, type: number, description: Total time logged for the issue 
+name: fct__jira__issue.updated_date, type: date_date, description: Updated time 
+name: fct__jira__issue.updated_month, type: date_month, description: Updated time 
+name: fct__jira__issue.updated_quarter, type: date_quarter, description: Updated time 
+name: fct__jira__issue.updated_raw, type: date_raw, description: Updated time 
+name: fct__jira__issue.updated_time, type: date_time, description: Updated time 
+name: fct__jira__issue.updated_week, type: date_week, description: Updated time 
+name: fct__jira__issue.updated_year, type: date_year, description: Updated time 
+name: fct__jira__issue.weeks_from_creation_to_resolution, type: duration_week, description: The elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.weeks_ticket_open, type: duration_week, description: If tickets are done: the elapsed time from ticket creation to ticket resolution. Otherwise: the elapsed time from ticket creation to current time 
+name: fct__jira__issue.years_from_creation_to_resolution, type: duration_year, description: The elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.years_ticket_open, type: duration_year, description: If tickets are done: the elapsed time from ticket creation to ticket resolution. Otherwise: the elapsed time from ticket creation to current time 
+name: fct__gsheet__joon_netnew_project_tracking.project_name, type: string, description: Project that is marked as net new project in the time period specified in the started time field 
+name: fct__gsheet__joon_netnew_project_tracking.started_date, type: date_date, description:  
+name: fct__gsheet__joon_netnew_project_tracking.started_month, type: date_month, description:  
+name: fct__gsheet__joon_netnew_project_tracking.started_quarter, type: date_quarter, description:  
+name: fct__gsheet__joon_netnew_project_tracking.started_raw, type: date_raw, description:  
+name: fct__gsheet__joon_netnew_project_tracking.started_week, type: date_week, description:  
+name: fct__gsheet__joon_netnew_project_tracking.started_year, type: date_year, description:  
+name: fct__jira__worklogs.author_id, type: string, description: ID of worklog's creator 
+name: worklog_creator.email, type: string, description: User's email 
+name: worklog_creator.group_name, type: string, description: User's group name 
+name: worklog_creator.is_active, type: yesno, description: User's active status 
+name: worklog_creator.name, type: string, description: User's name 
+name: worklog_creator.time_zone, type: string, description: User's time zone 
+name: worklog_creator.user_id, type: string, description: ID of user 
+name: fct__jira__worklogs.date, type: string, description: The date when the worklog is started (not updated). 
+name: fct__jira__worklogs.id, type: string, description: ID of worklog 
+name: fct__jira__worklogs.is_active, type: yesno, description: Active status of worklog's creator 
+name: fct__jira__worklogs.is_after_standard_logging, type: yesno, description: Whether worklog is created after standard logging is released 
+name: fct__jira__worklogs.issue_id, type: number, description: ID of Jira issue 
+name: fct__jira__worklogs.source, type: string, description: Table source 
+name: fct__jira__worklogs.started_date, type: date_date, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_month, type: date_month, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_quarter, type: date_quarter, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_raw, type: date_raw, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_time, type: date_time, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_week, type: date_week, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.started_year, type: date_year, description: Started timestamp (please don't use this field as a date range filter) 
+name: fct__jira__worklogs.time_spent_hours_dim, type: number, description:  
+name: fct__jira__worklogs.worklog_comment, type: string, description: Worklog's comment 
+
+  Measures are used to perform calculations/aggregations (if top, bottom, total, sum, etc. are used include a measure):
+ name: fct__gsheet__joon_netnew_project_tracking.count, type: count_distinct, description: Count of net new projects in the given time 
+name: fct__jira__issue.average_original_estimate, type: average_distinct, description:  
+name: fct__jira__issue.avg_open_days, type: average_distinct, description: Average days a ticket had been open until current date or until it was closed 
+name: fct__jira__issue.avg_resolution_days, type: average_distinct, description: Average elapsed time from ticket creation to ticket resolution 
+name: fct__jira__issue.count, type: count_distinct, description:  
+name: fct__jira__issue.total_original_estimate, type: sum_distinct, description:  
+name: fct__jira__worklogs.billable_rate, type: number, description: Total billable hours/ Total logged hours 
+name: fct__jira__worklogs.billable_utilization, type: number, description: Total billable hours/ Total working hours 
+name: fct__jira__worklogs.count, type: count, description:  
+name: worklog_creator.count, type: count_distinct, description:  
+name: fct__jira__worklogs.netnew_revenue, type: sum, description: Tentative revenue for net new projects based on flat rate 180$ assumption and inclusive of billable hours only 
+name: fct__jira__worklogs.pod_members, type: count_distinct, description:  
+name: fct__jira__worklogs.project_billable_rate, type: number, description: Total billable hours/ Total logged hours for external projects work 
+name: fct__jira__worklogs.resource_utilization, type: number, description: Total logged hours/ Total working hours 
+name: fct__jira__worklogs.tentative_revenue, type: sum, description: Tentative revenue based on flat rate 180$ assumption and inclusive of billable hours only 
+name: fct__jira__worklogs.total_billable_hours, type: sum, description: Total billable hours = total hours logged in time tracking field for issues of non-billable type 
+name: fct__jira__worklogs.total_logged_hours, type: number, description: Total logged hours (including both non-billable and billable hours) 
+name: fct__jira__worklogs.total_nonbillable_except_overtime_hours, type: sum, description: Total hours logged in time tracking field for issues of non-billable type 
+name: fct__jira__worklogs.total_nonbillable_hours, type: number, description: Total non-billable hours = Sum of hours logged in non-billable field for issues of billable type and total hours logged in time tracking field for issues of non-billable type 
+name: fct__jira__worklogs.total_overtime_hours, type: sum, description: Total hours logged in non-billable field for issues of billable type 
+name: fct__jira__worklogs.total_personal_nonbillable_hours, type: sum, description: Total nonbillable hours for internal J4J projects and personal development work (including OKR, meeting & reports, ideas generation, onboarding, interview, training & workshops) 
+name: fct__jira__worklogs.total_projects_nonbillable_except_overtime_hours, type: sum, description: Total hours logged in time tracking field for projects (including external & internal projects) issues of non-billable type 
+name: fct__jira__worklogs.total_projects_nonbillable_hours, type: number, description: Total nonbillable hours for project work (excluding Joon internal projects) 
+name: fct__jira__worklogs.total_time_spent_hours, type: sum, description: Total hours logged in time tracking field. This measure is for testing purposes only 
+name: fct__jira__worklogs.total_working_hours, type: number, description: Total working hours of engineers based on assumption that they work all weekdays, 8hrs/day 
+name: fct__jira__worklogs.weekdays_in_filter_range, type: number, description:  
+
+  

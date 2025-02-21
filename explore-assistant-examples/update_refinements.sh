@@ -2,7 +2,7 @@
 
 source .env
 TABLE_ID="explore_assistant_refinement_examples"  ##The ID of the BigQuery table where the data will be inserted. Set to explore_assistant_refinement_examples.
-JSON_FILE="refinement_examples.json"              ##The path to the JSON file containing the data to be loaded. Set to refinement_examples.json.
+JSON_FILE="refinement_examples_jira.json"              ##The path to the JSON file containing the data to be loaded. Set to refinement_examples.json.
 
 python load_examples.py \
 --project_id $PROJECT_ID \

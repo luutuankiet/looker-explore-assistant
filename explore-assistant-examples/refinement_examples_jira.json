@@ -1,0 +1,11 @@
+[
+    {
+      "input": ["make a chart of total logged hours by engineer", "make it a an area chart", "make it a table"],
+      "output": "make a chart of logged hours by engineers make it a table"
+    },
+    {
+      "input": ["show me hours by engineer", "by project"],
+      "output": "show me hours by engineer and project"
+    }
+  ]
+  
