@@ -97,6 +97,8 @@ module "bigquery_backend" {
   project_id        = var.project_id
   deployment_region = var.deployment_region
   dataset_id        = var.dataset_id_name
+  bq_llm_connection_id = var.bq_llm_connection_id
+
 
   depends_on = [time_sleep.wait_after_apis_activate, google_bigquery_dataset.dataset]
 }

@@ -42,3 +42,15 @@ variable "dataset_id_name" {
     default = "explore_assistant"
 }
 
+variable "bq_sa_account_id" {
+    type = string
+    description = "name of the bigquery service account created to call vertex ai, process examples prompt"
+}
+
+variable "bq_llm_connection_id" {
+    type = string
+    description = "name of bq connection used for remote llm calls"
+}
+
+
+

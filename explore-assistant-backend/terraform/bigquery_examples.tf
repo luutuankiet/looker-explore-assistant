@@ -1,6 +1,7 @@
 
 resource "google_service_account" "explore-assistant-bq-sa" {
-  account_id   = "explore-assistant-bq-sa"
+  # account_id   = "explore-assistant-bq-sa"
+  account_id   = var.bq_sa_account_id
   display_name = "Looker Explore Assistant BigQuery SA"
 }
 

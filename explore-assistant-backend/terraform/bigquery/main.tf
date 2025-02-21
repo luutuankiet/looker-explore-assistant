@@ -10,8 +10,13 @@ variable "dataset_id" {
     type = string
 }
 
+variable "bq_llm_connection_id" {
+  type = string
+}
+
 resource "google_bigquery_connection" "connection" {
-  connection_id = "explore_assistant_llm"
+  connection_id = var.bq_llm_connection_id
+  # connection_id = "explore_assistant_llm"
   project       = var.project_id
   location      = var.deployment_region
   cloud_resource {}
