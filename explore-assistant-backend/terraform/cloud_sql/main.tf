@@ -37,9 +37,25 @@ terraform {
   }
 }
 
+resource "google_compute_global_address" "private_ip_address" {
+  project = var.project_id
+  name          = "cloud-sql-private-ip-address"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = "projects/jtc-test-looker-core/global/networks/looker-psc-southbound-https"
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = "projects/jtc-test-looker-core/global/networks/looker-psc-southbound-https"
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
 resource "google_sql_database_instance" "main" {
+  depends_on = [google_service_networking_connection.private_vpc_connection]
   database_version     = "MYSQL_8_0_31"
-  deletion_protection  = true
+  deletion_protection  = false
   encryption_key_name  = null
   instance_type        = "CLOUD_SQL_INSTANCE"
   master_instance_name = null
@@ -82,9 +98,9 @@ resource "google_sql_database_instance" "main" {
     }
     ip_configuration {
       allocated_ip_range                            = null
-      enable_private_path_for_google_cloud_services = false
+      enable_private_path_for_google_cloud_services = true
       ipv4_enabled                                  = true
-      private_network                               = null
+      private_network                               = "projects/jtc-test-looker-core/global/networks/looker-psc-southbound-https"
       authorized_networks {
         expiration_time = null
         name            = null
@@ -161,22 +177,42 @@ resource "local_file" "cloudsql_outputs" {
   file_permission = "0600" # Restricted file permissions for security
   depends_on      = [google_sql_user.cloud_sql_user]
 }
-
-resource "null_resource" "run_python" {
+resource "null_resource" "generate_sql_schema" {
   triggers = {
-    cloudsql_info_changes = local_file.cloudsql_outputs.content # Trigger on content changes
+    model_hash = fileexists("${path.module}/../../../explore-assistant-cloud-run/models.py") ? filesha256("${path.module}/../../../explore-assistant-cloud-run/models.py") : "no_models"
+    script_hash = fileexists("${path.module}/create_tables.py") ? filesha256("${path.module}/create_tables.py") : "no_script"
   }
 
   provisioner "local-exec" {
-    working_dir = path.module
-    command     = <<-EOT
-    python -m venv .venv && \
-    source .venv/bin/activate && \
-    python -m pip install -r requirements.txt && \
-    python create_tables.py
+    command = <<-EOT
+      python -m venv .venv
+      source .venv/bin/activate
+      pip install sqlmodel pymysql
+      
+      # Set environment variables for database connection
+      export DB_HOST="127.0.0.1"
+      export DB_USER="${google_sql_user.cloud_sql_user.name}"
+      export DB_PASS="${google_sql_user.cloud_sql_user.password}"
+      export DB_NAME="${google_sql_database.production.name}"
+      
+      # Download and start Cloud SQL Proxy
+      curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.8.0/cloud-sql-proxy.linux.amd64
+      chmod +x cloud-sql-proxy
+      ./cloud-sql-proxy ${google_sql_database_instance.main.connection_name} &
+      sleep 10
+      
+      # Run the create_tables script
+      python create_tables.py
+      
+      # Cleanup
+      pkill cloud-sql-proxy
     EOT
     interpreter = ["bash", "-c"]
+    working_dir = path.module
   }
 
-  depends_on = [local_file.cloudsql_outputs]
+  depends_on = [
+    google_sql_database.production,
+    google_sql_user.cloud_sql_user,
+  ]
 }
