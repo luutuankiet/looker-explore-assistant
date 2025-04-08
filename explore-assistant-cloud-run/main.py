@@ -1,7 +1,7 @@
 import os
 import logging
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, Tuple
 from fastapi import FastAPI, Request, HTTPException, Response, Depends, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -12,7 +12,8 @@ import json
 from sqlmodel import Session
 from models import (
     LoginRequest, ThreadRequest, MessageRequest, FeedbackRequest,
-    BaseResponse, ThreadHistoryResponse, SearchResponse
+    BaseResponse, SearchResponse, UserThreadsResponse, ThreadMessagesResponse,
+    ThreadMessagesRequest, UserThreadsRequest, ThreadDeleteRequest
 )
 from database import get_session
 from helper_functions import (
@@ -27,8 +28,12 @@ from helper_functions import (
     generate_response,
     generate_looker_query,
     DatabaseError,
-    update_message_db,
-    search_thread_history
+    _update_message,
+    _update_thread,
+    _get_user_threads,
+    _get_thread_messages,
+    search_thread_history,
+    soft_delete_specific_threads
 )
 
 # Configure logging
@@ -130,28 +135,30 @@ async def create_thread(
     except DatabaseError as e:
         raise HTTPException(status_code=500, detail={"error": e.args[0], "details": e.details})
 
-@app.get("/thread/history")
-async def thread_history(
+@app.get("/user/thread")
+async def get_user_threads(
     user_id: str,
-    thread_id: str,
+    limit: Optional[int] = 10,
+    offset: Optional[int] = 0,
     authorized: bool = Depends(validate_token),
     db: Session = Depends(get_session)
-):
+    ) -> UserThreadsResponse:
+    """
+    Get threads for a user with pagination.
+    
+    Parameters:
+    - user_id: The ID of the user
+    - limit: Maximum number of threads to return (default: 10)
+    - offset: Offset for pagination (default: 0)
+    """
     try:
-        thread_history_data = retrieve_thread_history(thread_id)
+        user_threads, total_count = _get_user_threads(user_id, limit, offset)
         
-        # Case 1: First-time user with no thread history
-        if not thread_history_data:
-            return ThreadHistoryResponse(
-                message="No thread history found for user",
-                data={"threads": []}
+        return UserThreadsResponse(
+            threads=user_threads, 
+            total_count=total_count
             )
-            
-        # Case 2: Normal case with existing history
-        return ThreadHistoryResponse(**thread_history_data)
-        
     except DatabaseError as e:
-        # Case 3: Database or server-related errors
         raise HTTPException(
             status_code=503, 
             detail={
@@ -161,7 +168,6 @@ async def thread_history(
             }
         )
     except Exception as e:
-        # Case 4: Other unexpected errors
         raise HTTPException(
             status_code=500,
             detail={
@@ -171,33 +177,94 @@ async def thread_history(
             }
         )
 
+@app.get("/thread/{thread_id}/messages")
+async def get_thread_messages(
+    thread_id: int,
+    limit: Optional[int] = 50,
+    offset: Optional[int] = 0,
+    authorized: bool = Depends(validate_token),
+    db: Session = Depends(get_session)
+    ) -> ThreadMessagesResponse:
+    """
+    Get messages for a thread with pagination.
+    
+    Parameters:
+    - thread_id: The ID of the thread
+    - limit: Maximum number of messages to return (default: 50)
+    - offset: Offset for pagination (default: 0)
+    """
+    try:
+        messages, total_count = _get_thread_messages(thread_id, limit, offset)
+        
+        return ThreadMessagesResponse(
+            messages=messages,
+            total_count=total_count
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Failed to retrieve thread messages",
+                "message": str(e)
+            }
+        )
+
+
+
+
+@app.put("/thread/update")
+async def update_thread(
+    update_fields: dict,
+    authorized: bool = Depends(validate_token),
+    db: Session = Depends(get_session)
+):
+    try:
+        updated_thread = _update_thread(**update_fields)
+        
+        return BaseResponse(
+            message="Thread updated successfully",
+            data={"response": updated_thread}
+            )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/threads/delete")
+async def delete_specific_threads(
+    request: ThreadDeleteRequest,
+    authorized: bool = Depends(validate_token),
+    db: Session = Depends(get_session)
+):
+    try:
+        result = soft_delete_specific_threads(request.user_id, request.thread_ids)
+        return BaseResponse(
+            message="Threads marked as deleted successfully",
+            data=result
+        )
+    except DatabaseError as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"error": "Failed to delete threads", "details": str(e)}
+        )
+
+
 @app.post("/message")
-async def handle_message(
+async def process_message(
     request: MessageRequest,
     authorized: bool = Depends(validate_token),
     db: Session = Depends(get_session)
 ):
     try:
-        thread_id = request.current_thread_id
 
-        if not thread_id:
-            raise HTTPException(status_code=500, detail="Failed to create message thread")
 
+        request_dict = request.model_dump()
         if not request.message_id:
             # scenario : FE send request to generate a message ID
             # the endpoint will return a message id of the logged data
             # WITHOUT any LLM processing; FE will the resend the message with new id
             # to continue the process.
-            new_id = add_message(
-                message_id=None,
-                thread_id=request.current_thread_id,
-                contents=request.contents,
-                prompt_type=request.prompt_type,
-                current_explore_key=request.current_explore_key,
-                raw_prompt=request.raw_prompt,
-                user_id=request.user_id,
-                is_user=request.is_user
-            )
+            new_id = add_message(**request_dict)
             
             return BaseResponse(
                 message="Message ID generated successfully",
@@ -213,23 +280,14 @@ async def handle_message(
                 )
             
             # update the logged message record with LLM response
-            updated_message = update_message_db(
-                message_id=request.message_id,
-                thread_id=request.current_thread_id,
-                contents=request.contents,
-                prompt_type=request.prompt_type,
-                current_explore_key=request.current_explore_key,
-                raw_prompt=request.raw_prompt,
-                user_id=request.user_id,
-                is_user=request.is_user,
-                llm_response=response_text
-            )
+            request_dict['llm_response'] = response_text
+            updated_message = _update_message(**request_dict)
 
             logger.info(f"LLM Response: {response_text}")
             
             return BaseResponse(
                 message="Message handled successfully",
-                data={"response": response_text, "thread_id": thread_id}
+                data={"response": response_text, "updated_data": updated_message}
             )
         
     except DatabaseError as e:
@@ -245,7 +303,7 @@ async def update_message(
 ):
     try:
 
-        updated_message = update_message_db(**update_fields)
+        updated_message = _update_message(**update_fields)
         
         return BaseResponse(
             message="Message updated successfully",
