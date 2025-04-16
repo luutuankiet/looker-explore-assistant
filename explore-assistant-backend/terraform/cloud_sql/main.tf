@@ -50,7 +50,7 @@ terraform {
 
 resource "google_sql_database_instance" "main" {
   database_version     = "MYSQL_8_0_31"
-  deletion_protection  = true
+  deletion_protection  = false
   encryption_key_name  = null
   instance_type        = "CLOUD_SQL_INSTANCE"
   master_instance_name = null
@@ -63,7 +63,6 @@ resource "google_sql_database_instance" "main" {
     availability_type           = "ZONAL"
     collation                   = null
     connector_enforcement       = "NOT_REQUIRED"
-    deletion_protection_enabled = false
     disk_autoresize             = true
     disk_autoresize_limit       = 0
     disk_size                   = 10
