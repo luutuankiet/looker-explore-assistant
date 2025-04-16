@@ -57,6 +57,12 @@ variable "cloudSQL_server_name" {
   description = "value for the cloud SQL server name"
 }
 
+variable "bq_cloudsql_connection_id" {
+  type        = string
+  description = "name of the external bigquery connection to cloud sql"
+
+}
+
 
 #
 # CLOUD RUN VARIABLES

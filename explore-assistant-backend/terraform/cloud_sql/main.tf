@@ -1,3 +1,9 @@
+variable "bq_cloudsql_connection_id" {
+  type = string
+  description = "name of the external bigquery connection to cloud sql"
+  
+}
+
 variable "deployment_region" {
   type        = string
   description = "Region to deploy the Cloud SQL service. Example: us-central1"
@@ -221,6 +227,28 @@ resource "google_secret_manager_secret_version" "cloud_sql_database_version" {
   
   depends_on = [
     google_secret_manager_secret.cloud_sql_database,
+    google_sql_database.production
+  ]
+}
+
+
+resource "google_bigquery_connection" "bq_cloud_sql_connection" {
+  connection_id = var.bq_cloudsql_connection_id
+  project       = var.project_id
+  location      = var.deployment_region
+  
+  cloud_sql {
+    instance_id = google_sql_database_instance.main.connection_name
+    database    = google_sql_database.production.name
+    type        = split("_", google_sql_database_instance.main.database_version)[0]
+    credential {
+      username = google_sql_user.cloud_sql_user.name
+      password = google_sql_user.cloud_sql_user.password
+    }
+  }
+
+  depends_on = [
+    google_sql_database_instance.main,
     google_sql_database.production
   ]
 }

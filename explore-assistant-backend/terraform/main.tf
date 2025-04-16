@@ -82,13 +82,15 @@ resource "google_bigquery_dataset" "dataset" {
 }
 
 module "cloud_sql" {
-  count                = var.use_cloud_run_backend ? 1 : 0
-  source               = "./cloud_sql"
-  deployment_region    = var.deployment_region
-  project_id           = var.project_id
-  root_password        = var.root_password
-  user_password        = var.user_password
-  cloudSQL_server_name = var.cloudSQL_server_name
+  count                     = var.use_cloud_run_backend ? 1 : 0
+  source                    = "./cloud_sql"
+  deployment_region         = var.deployment_region
+  project_id                = var.project_id
+  root_password             = var.root_password
+  user_password             = var.user_password
+  cloudSQL_server_name      = var.cloudSQL_server_name
+  bq_cloudsql_connection_id = var.bq_cloudsql_connection_id
+
 
   depends_on = [time_sleep.wait_after_apis_activate]
 }
