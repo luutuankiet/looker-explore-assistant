@@ -27,3 +27,5 @@ plan.dat
 misc
 
 looker.ini
+explore_assistant_sa_key.json
+cloudsql_outputs.json
