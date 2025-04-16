@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "debug BE",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/explore-assistant-cloud-run",
+            "envFile": "${workspaceFolder}/explore-assistant-cloud-run/.env",
+            "program": "${workspaceFolder}/explore-assistant-cloud-run/main.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/explore-assistant-cloud-run/.venv/bin/python",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/explore-assistant-cloud-run"
+            }
+        },
+        {
+            "name": "debug FE",
+            "type": "chrome",
+            "request": "attach",
+            "address": "localhost",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}/explore-assistant-extension/src",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+              "webpack:///*": "${workspaceFolder}/explore-assistant-extension/*",
+              "webpack:///src/*": "${workspaceFolder}/explore-assistant-extension/src/*",
+              "webpack://./*": "${workspaceFolder}/explore-assistant-extension/*"
+            },
+            "trace": true
+          }        
+    ]
+}
