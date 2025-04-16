@@ -20,7 +20,7 @@ module "base-project-services" {
 
 resource "time_sleep" "wait_after_basic_apis_activate" {
   depends_on      = [module.base-project-services]
-  create_duration = "1s"
+  create_duration = "120s"
 }
 
 module "bg-backend-project-services" {
@@ -90,7 +90,7 @@ module "cloud_sql" {
   user_password             = var.user_password
   cloudSQL_server_name      = var.cloudSQL_server_name
   bq_cloudsql_connection_id = var.bq_cloudsql_connection_id
-  dataset_id_name = var.dataset_id_name
+  dataset_id_name           = var.dataset_id_name
 
 
 

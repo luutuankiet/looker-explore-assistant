@@ -15,3 +15,7 @@ bq_cloudsql_connection_id = "explore-assistant-cloudsql-connection"
 looker_client_id = "Your looker client id"
 looker_client_secret = "Your looker client secret"
 looker_api_url = "Your looker api url i.e. https://joonpartner.cloud.looker.com"
+deploy_looker_projects                     = false # set this to true to deploy looker project and models. disabled by default
+looker_connection_name                     = "explore_assistant_poc"
+looker_extension_project_name              = "explore_assistant_poc_extension"
+looker_performance_monitoring_project_name = "explore_assistant_poc_performance_monitoring"
