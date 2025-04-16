@@ -90,6 +90,8 @@ module "cloud_sql" {
   user_password             = var.user_password
   cloudSQL_server_name      = var.cloudSQL_server_name
   bq_cloudsql_connection_id = var.bq_cloudsql_connection_id
+  dataset_id_name = var.dataset_id_name
+
 
 
   depends_on = [time_sleep.wait_after_apis_activate]
