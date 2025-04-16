@@ -57,6 +57,12 @@ variable "cloudSQL_server_name" {
   description = "value for the cloud SQL server name"
 }
 
+variable "bq_cloudsql_connection_id" {
+  type        = string
+  description = "name of the external bigquery connection to cloud sql"
+
+}
+
 
 #
 # CLOUD RUN VARIABLES
@@ -113,3 +119,35 @@ variable "connection_id" {
   default = "explore_assistant_llm"
 }
 
+
+
+
+#
+# Looker variables
+#
+
+variable "deploy_looker_projects" {
+  description = "Optional flag to also provision looker infra from terraform."
+  type        = bool
+  default     = false
+}
+
+
+variable "looker_connection_name" {
+  type    = string
+  default = "explore_assistant_poc"
+}
+
+variable "looker_extension_project_name" {
+  type        = string
+  description = "the name of lookml model and project of the extension"
+  default     = "explore_assistant_poc_extension"
+
+}
+
+variable "looker_performance_monitoring_project_name" {
+  type        = string
+  description = "the name of lookml model and project of the performance monitoring feat"
+  default     = "explore_assistant_poc_performance_monitoring"
+
+}

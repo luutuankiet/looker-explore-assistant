@@ -74,6 +74,16 @@ resource "google_project_iam_member" "default" {
   role      = "roles/secretmanager.secretAccessor"
   member  = format("serviceAccount:%s", google_service_account.explore_assistant_sa.email)
 }
+resource "google_project_iam_member" "iam_permission_bq_job_user" {
+  project = var.project_id
+  role      = "roles/bigquery.jobUser"
+  member  = format("serviceAccount:%s", google_service_account.explore_assistant_sa.email)
+}
+resource "google_project_iam_member" "iam_permission_bq_connection_user" {
+  project = var.project_id
+  role      = "roles/bigquery.connectionUser"
+  member  = format("serviceAccount:%s", google_service_account.explore_assistant_sa.email)
+}
 
 resource "google_cloud_run_v2_service" "default" {
   name     = var.cloud_run_service_name
@@ -172,7 +182,7 @@ resource "google_cloud_run_v2_service" "default" {
     percent         = 100
     type = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
   }
-  depends_on = [ google_service_account.explore_assistant_sa ]
+  depends_on = [ google_service_account.explore_assistant_sa, google_project_iam_member.default ]
 }
 
 ### IAM permissions for Cloud Run (public access)
@@ -192,6 +202,22 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
+
+
+resource "google_service_account_key"  "explore_assistant_sa_key" {
+  service_account_id = google_service_account.explore_assistant_sa.name
+  private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
+  depends_on = [ google_service_account.explore_assistant_sa ]
+}
+
+# Save the key to a local file
+resource "local_file" "explore_assistant_sa_key_file" {
+  filename = "${path.module}/explore_assistant_sa_key.json"
+  content  = base64decode(google_service_account_key.explore_assistant_sa_key.private_key)
+  file_permission = "0600" 
+  depends_on = [ google_service_account_key.explore_assistant_sa_key ]
+}
+
 
 output "cloud_run_uri" {
   value = google_cloud_run_v2_service.default.uri
