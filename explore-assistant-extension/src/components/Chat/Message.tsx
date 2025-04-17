@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import MarkdownText from './MarkdownText'
 import clsx from 'clsx'
 import { ThumbUp, ThumbDown } from '@material-ui/icons'
 import './Message.css'
 import process from 'process'
+import { RootState, AssistantState } from '../../store'
 
 export const getRelativeTimeString = (dateStr: string | Date) => {
   const date = new Date(dateStr)
@@ -74,25 +75,37 @@ interface MessageProps {
   createdAt?: number
   message?: string
   uuid: string
+  feedback?: {
+    feedback_text: string
+    is_positive: boolean
+  } | null
 }
 
-const Message = ({ message, actor, children, uuid }: MessageProps) => {
+const Message = ({ message, actor, children, uuid, feedback }: MessageProps) => {
   const [isThumbUpClicked, setIsThumbUpClicked] = useState(false)
   const [isThumbDownClicked, setIsThumbDownClicked] = useState(false)
   const [showButtons, setShowButtons] = useState(false)
   const [feedbackVisible, setFeedbackVisible] = useState(false)
   const [feedbackText, setFeedbackText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedMessage, setSelectedMessage] = useState(null)
+  const [hasFeedback, setHasFeedback] = useState(false)
   const { me, currentExploreThread } = useSelector((state: RootState) => state.assistant as AssistantState)
   const { access_token } = useSelector((state: RootState) => state.auth)
   const VERTEX_AI_ENDPOINT = process.env.VERTEX_AI_ENDPOINT || ''
   const userId = me.id
 
-
-
+  // doesnt do anything for now cause feeback prop dont persist but instead hasFeedBack, isThumbsUpClicked, isThumbsDownClicked.
+  // use this in the future to persist feedback state in UI across sessions.
+  useEffect(() => {
+    if (feedback) {
+      setHasFeedback(true)
+      setIsThumbUpClicked(feedback.is_positive)
+      setIsThumbDownClicked(!feedback.is_positive)
+    }
+  }, [feedback])
 
   const handleThumbUpClick = () => {
+    if (hasFeedback) return
     setIsThumbUpClicked(!isThumbUpClicked)
     setIsThumbDownClicked(false)
     setFeedbackVisible(!isThumbUpClicked) // Show feedback form
@@ -100,6 +113,7 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
   }
   
   const handleThumbDownClick = () => {
+    if (hasFeedback) return
     setIsThumbDownClicked(!isThumbDownClicked)
     setIsThumbUpClicked(false)
     setFeedbackVisible(!isThumbDownClicked) // Show feedback form
@@ -107,13 +121,17 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
   }
 
   const handleMouseEnter = () => {
-    setShowButtons(true)
+    if (!hasFeedback) {
+      setShowButtons(true)
+    }
   }
 
   const handleMouseLeave = () => {
-    setTimeout(() => {
-      setShowButtons(false)
-    }, 100) // Adjust the delay as needed
+    if (!hasFeedback) {
+      setTimeout(() => {
+        setShowButtons(false)
+      }, 100)
+    }
   }
 
   const handleSubmitFeedback = useCallback(async () => {
@@ -141,6 +159,7 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
 
       setFeedbackVisible(false)
       setFeedbackText('')
+      setHasFeedback(true)
     } catch (error) {
       console.error('Error submitting feedback:', error)
       // You might want to show an error message to the user here
@@ -150,7 +169,7 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
   }, [feedbackText,uuid])
 
   const handleCancelFeedback = () => {
-    setFeedbackVisible(false) // Hide feedback form
+    setFeedbackVisible(false)
     setFeedbackText('')
     setIsThumbUpClicked(false)
     setIsThumbDownClicked(false)
@@ -176,7 +195,7 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
           {message && <MarkdownText text={message} />}
           {children && <div>{children}</div>}
         </div>
-        {actor !== 'user' && (
+        {actor !== 'user' && !hasFeedback && (
           <div className={`flex space-x-2 mt-2 ${showButtons || isThumbUpClicked || isThumbDownClicked ? 'visible' : 'hidden'}`}>
             <button 
               onClick={handleThumbUpClick}
@@ -192,7 +211,12 @@ const Message = ({ message, actor, children, uuid }: MessageProps) => {
             </button>
           </div>
         )}
-        {feedbackVisible && (
+        {actor !== 'user' && hasFeedback && (
+          <div className="text-sm text-gray-500 mt-1">
+            Feedback submitted
+          </div>
+        )}
+        {feedbackVisible && !hasFeedback && (
           <div className="feedback-form">
             <textarea
               value={feedbackText}
