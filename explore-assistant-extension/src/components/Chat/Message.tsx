@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { ThumbUp, ThumbDown } from '@material-ui/icons'
 import './Message.css'
 import process from 'process'
-import { RootState, AssistantState } from '../../types'
+import { RootState, AssistantState } from '../../store'
 
 export const getRelativeTimeString = (dateStr: string | Date) => {
   const date = new Date(dateStr)
@@ -94,6 +94,8 @@ const Message = ({ message, actor, children, uuid, feedback }: MessageProps) => 
   const VERTEX_AI_ENDPOINT = process.env.VERTEX_AI_ENDPOINT || ''
   const userId = me.id
 
+  // doesnt do anything for now cause feeback prop dont persist but instead hasFeedBack, isThumbsUpClicked, isThumbsDownClicked.
+  // use this in the future to persist feedback state in UI across sessions.
   useEffect(() => {
     if (feedback) {
       setHasFeedback(true)
