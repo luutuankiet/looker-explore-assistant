@@ -62,3 +62,18 @@
   transform: translateX(-50%);
   white-space: nowrap;
 }
+
+.feedback-dropdown {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.feedback-dropdown:focus {
+  outline: none;
+  border-color: #4285f4;
+}

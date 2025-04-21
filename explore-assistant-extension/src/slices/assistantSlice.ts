@@ -371,6 +371,11 @@ interface Sample {
   prompt: string
 }
 
+export interface FeedbackCategory {
+  name: string;
+  description: string;
+}
+
 export interface Message {
   uuid: string
   message: string
@@ -473,6 +478,7 @@ export interface AssistantState {
   settings: Settings,
   isBigQueryMetadataLoaded: boolean,
   isSemanticModelLoaded: boolean
+  feedbackCategories: FeedbackCategory[]
 }
 
 export const newThreadState = createAsyncThunk(
@@ -571,6 +577,7 @@ export const initialState: AssistantState = {
   isBigQueryMetadataLoaded: false,
   isSemanticModelLoaded: false,
   isLoadingThreads: false,
+  feedbackCategories: []
 }
 export const assistantSlice = createSlice({
   name: 'assistant',
@@ -705,6 +712,12 @@ export const assistantSlice = createSlice({
       action: PayloadAction<AssistantState['examples']['exploreRefinementExamples']>,
     ) {
       state.examples.exploreRefinementExamples = action.payload
+    },
+    setFeedbackCategories(
+      state,
+      action: PayloadAction<AssistantState['feedbackCategories']>,
+    ) {
+      state.feedbackCategories = action.payload;
     },
     updateSummaryMessage: (
       state,
@@ -933,6 +946,7 @@ export const {
   setExploreGenerationExamples,
   setExploreRefinementExamples,
   setExploreSamples,
+  setFeedbackCategories,
 
   setisBigQueryMetadataLoaded,
 

@@ -1,0 +1,4 @@
+name,description
+Visualization,How well the provided visualization match the user input
+Query accuracy,How accurately the assistant translated the user’s natural language request into the correct query for Looker Explore.
+Other,Other categories not specified

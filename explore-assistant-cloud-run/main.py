@@ -321,7 +321,7 @@ async def give_feedback(
     db: Session = Depends(get_session)
 ):
     try:
-        result = add_feedback(request.user_id, request.message_id, request.feedback_text, request.is_positive)
+        result = add_feedback(**request.model_dump())
         if result:
             return BaseResponse(
                 message="Feedback submitted successfully",
