@@ -25,7 +25,7 @@ bq load \
     --location=$LOCATION \
     --replace=true \
     --source_format=CSV \
-    --schema=Name:STRING,Description:STRING \
+    --schema=name:STRING,description:STRING \
     --skip_leading_rows=1 \
     "$PROJECT_ID:$DATASET_ID.$TABLE_NAME" \
     "./$TABLE_NAME.csv"

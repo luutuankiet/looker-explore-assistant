@@ -4,12 +4,14 @@ import {
   setExploreGenerationExamples,
   setExploreRefinementExamples,
   setExploreSamples,
+  setFeedbackCategories,
   ExploreSamples,
   setisBigQueryMetadataLoaded,
   setCurrenExplore,
   RefinementExamples,
   ExploreExamples,
-  AssistantState
+  AssistantState,
+  FeedbackCategory
 } from '../slices/assistantSlice'
 
 import { ExtensionContext } from '@looker/extension-sdk-react'
@@ -127,6 +129,36 @@ export const useBigQueryExamples = () => {
     }).catch((error) => showBoundary(error))
   }
 
+  const getFeedbackCategories = async () => {
+    const sql = `
+    SELECT
+        name,
+        description
+    FROM
+      \`${datasetName}.feedback_categories\`
+  `
+    return runSQLQuery(sql).then((response) => {
+      if(response.length === 0 || !Array.isArray(response)) {
+        return
+      }
+      const feedbackCategories: FeedbackCategory[] = []
+      
+      if(response.length === 0 || !Array.isArray(response)) {
+        return
+      }
+
+      response.forEach((row: any) => {
+        feedbackCategories.push({
+          name: row['name'],
+          description: row['description']
+        })
+      })
+
+      dispatch(setFeedbackCategories(feedbackCategories))
+    }).catch((error) => showBoundary(error))
+  }
+
+
   // Create a ref to track if the hook has already been called
   const hasFetched = useRef(false)
 
@@ -139,7 +171,7 @@ export const useBigQueryExamples = () => {
     if(isBigQueryMetadataLoaded) return
 
     dispatch(setisBigQueryMetadataLoaded(false))
-    Promise.all([getExamplePrompts(), getRefinementPrompts(), getSamples()])
+    Promise.all([getExamplePrompts(), getRefinementPrompts(), getSamples(), getFeedbackCategories()])
       .then(() => {
         dispatch(setisBigQueryMetadataLoaded(true))
       })

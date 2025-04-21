@@ -278,15 +278,10 @@ def _update_message(**kwargs) -> Message:
         raise DatabaseError("Failed to update message", str(e))
 
 
-def add_feedback(user_id: str, message_id: int, feedback_text: str, is_positive: bool) -> Feedback:
+def add_feedback(**kwargs) -> Feedback:
     try:
         with Session(engine) as session:
-            feedback = Feedback(
-                user_id=user_id,
-                message_id=message_id,
-                feedback_text=feedback_text,
-                is_positive=is_positive
-            )
+            feedback = Feedback(**kwargs)
             session.add(feedback)
             session.commit()
             return feedback

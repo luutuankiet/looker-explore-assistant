@@ -88,8 +88,9 @@ const Message = ({ message, actor, children, uuid, feedback }: MessageProps) => 
   const [feedbackVisible, setFeedbackVisible] = useState(false)
   const [feedbackText, setFeedbackText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [hasFeedback, setHasFeedback] = useState(false)
-  const { me, currentExploreThread } = useSelector((state: RootState) => state.assistant as AssistantState)
+  const { me, currentExploreThread, feedbackCategories } = useSelector((state: RootState) => state.assistant as AssistantState)
   const { access_token } = useSelector((state: RootState) => state.auth)
   const VERTEX_AI_ENDPOINT = process.env.VERTEX_AI_ENDPOINT || ''
   const userId = me.id
@@ -150,6 +151,7 @@ const Message = ({ message, actor, children, uuid, feedback }: MessageProps) => 
           message_id: uuid,
           feedback_text: feedbackText,
           is_positive: isThumbUpClicked,
+          category: selectedCategory,
         }),
       })
 
@@ -218,6 +220,23 @@ const Message = ({ message, actor, children, uuid, feedback }: MessageProps) => 
         )}
         {feedbackVisible && !hasFeedback && (
           <div className="feedback-form">
+            <select 
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="feedback-dropdown"
+              aria-label="Feedback category"
+            >
+              <option value="">Category (hover for info)</option>
+              {feedbackCategories.map((category) => (
+                <option 
+                  key={category.name} 
+                  value={category.name}
+                  title={category.description}
+                >
+                  {category.name}
+                </option>
+              ))}
+            </select>            
             <textarea
               value={feedbackText}
               onChange={(e) => setFeedbackText(e.target.value)}

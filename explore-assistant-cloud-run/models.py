@@ -240,6 +240,7 @@ class Feedback(SQLModel, table=True):
     message_id: int = Field(foreign_key="messages.message_id")
     feedback_text: str
     is_positive: bool
+    category: Optional[str]
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     
     message: Message = Relationship(back_populates="feedback")
@@ -274,6 +275,7 @@ class FeedbackRequest(BaseModel):
     message_id: int = Field(..., description="Message ID")
     feedback_text: str = Field(..., description="Feedback text")
     is_positive: bool = Field(..., description="Whether the feedback is positive")
+    category: Optional[str] = Field(default=None, description="The category selected by user")
 
 class BaseResponse(BaseModel):
     """Base model for successful responses"""
