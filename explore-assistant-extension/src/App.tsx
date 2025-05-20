@@ -12,7 +12,6 @@ import { isTokenExpired } from './components/Auth/AuthProvider'
 import { ExtensionContext } from '@looker/extension-sdk-react'
 import { setMeSdk, fetchUserThreads } from './slices/assistantSlice'
 import { RootState } from './store'
-import { useAppDispatch } from './hooks/useAppDispatch'
 
 
 // OAuth Callback handler component
@@ -56,8 +55,9 @@ const OAuthCallbackPage = () => {
 const ExploreApp = () => {
   const authenticate = useOAuthAuthentication()
   const dispatch = useDispatch()
-  const { isAuthenticated, access_token, expires_in } = useSelector((state: RootState) => state.auth)
-
+  const { isAuthenticated, access_token, expires_in } = useSelector(
+    (state: RootState) => state.auth || { isAuthenticated: false, access_token: null, expires_in: null }
+  )
   const { core40SDK } = useContext(ExtensionContext);
   const [me, setMe] = useState<any>(null);
 
