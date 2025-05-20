@@ -10,14 +10,15 @@ import AuthLoadingScreen from './components/Auth/AuthLoadingScreen'
 import { setAuthenticated, setToken, setExpiry } from './slices/authSlice'
 import { isTokenExpired } from './components/Auth/AuthProvider'
 import { ExtensionContext } from '@looker/extension-sdk-react'
-import { setMeSdk } from './slices/assistantSlice'
-
+import { setMeSdk, fetchUserThreads } from './slices/assistantSlice'
+import { RootState } from './store'
+import { useAppDispatch } from './hooks/useAppDispatch'
 
 
 // OAuth Callback handler component
 const OAuthCallbackPage = () => {
   const location = useLocation(); // To access the URL query params
-  const [tokenData, setTokenData] = useState(null);
+  const [tokenData, setTokenData] = useState<{accessToken: string} | null>(null);
 
   useEffect(() => {
     // Capture the access token from the query parameters
@@ -58,7 +59,7 @@ const ExploreApp = () => {
   const { isAuthenticated, access_token, expires_in } = useSelector((state: RootState) => state.auth)
 
   const { core40SDK } = useContext(ExtensionContext);
-  const [me, setMe] = useState(null);
+  const [me, setMe] = useState<any>(null);
 
 
   useEffect(() => {
@@ -67,13 +68,17 @@ const ExploreApp = () => {
         const me = await core40SDK.ok(core40SDK.me());
         setMe(me); // need this to enforce me loaded before rendering the AgentPage
         dispatch(setMeSdk(me));
-
+        
+        // After setting user info, fetch threads
+        if (isAuthenticated && access_token) {
+          (dispatch as any)(fetchUserThreads({}));
+        }
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
     };
     fetchUserInfo();
-  }, []);
+  }, [isAuthenticated, access_token, dispatch]);
 
 
   // Load dimensions, measures, and examples into the state

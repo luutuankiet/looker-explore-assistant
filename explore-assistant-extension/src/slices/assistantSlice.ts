@@ -42,9 +42,12 @@ export const fetchThreadId = createAsyncThunk(
 );
 
 
-export const fetchUserThreads = createAsyncThunk(
+export const fetchUserThreads = createAsyncThunk<
+  { threads: ExploreThread[]; totalCount: number; offset: number; limit: number },
+  { limit?: number; offset?: number } 
+>(
   'assistant/fetchUserThreads',
-  async ({ limit = 15, offset = 0 }: { limit?: number, offset?: number } = {}, { getState, dispatch }) => {
+  async ({ limit = 15, offset = 0 } = {}, { getState, dispatch }) => {
     const state = getState() as RootState;
     const { access_token } = state.auth;
     const { me } = state.assistant;
@@ -66,7 +69,12 @@ export const fetchUserThreads = createAsyncThunk(
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${access_token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevent caching completely
+          'Pragma': 'no-cache',
+          'Expires': '0'
         },
+        // Ensure network requests aren't cached
+        cache: 'no-store'
       });
 
       if (!response.ok) {
@@ -77,7 +85,7 @@ export const fetchUserThreads = createAsyncThunk(
       const data = await response.json();
       // The response format from the backend is different from what we expect
       // We need to map the backend fields to frontend fields
-      const threads = data.threads.map(thread => ({
+      const threads = data.threads.map((thread: any) => ({
         uuid: thread.thread_id.toString(),
         userId: thread.user_id,
         exploreKey: thread.explore_key || '',
@@ -98,7 +106,13 @@ export const fetchUserThreads = createAsyncThunk(
       };
     } catch (error) {
       console.error('Error fetching user threads:', error);
-      return []; // Return empty array on error to avoid breaking the UI
+      // Return empty threads array but with proper pagination structure
+      return {
+        threads: [],
+        totalCount: 0,
+        offset,
+        limit
+      }; 
     }
   }
 );
@@ -787,11 +801,14 @@ export const assistantSlice = createSlice({
       state.isLoadingThreads = true;
     });
     builder.addCase(fetchUserThreads.fulfilled, (state, action) => {
-      state.history = action.payload.threads || [];
-      state.threadsInitialized = true; // Mark as initialized regardless of result
+      // Always mark as initialized regardless of result
+      state.threadsInitialized = true; 
       state.isLoadingThreads = false;
-      const { threads, totalCount, offset, limit } = action.payload;
-
+      
+      // Make sure we have a valid payload with threads array
+      const payload = action.payload || { threads: [], totalCount: 0, offset: 0, limit: 15 };
+      const { threads, totalCount, offset, limit } = payload;
+      
       // Update pagination info
       state.pagination.threads = {
         limit,
@@ -803,23 +820,26 @@ export const assistantSlice = createSlice({
       // If this is the first page (offset=0), replace history
       // Otherwise append to existing history
       if (offset === 0) {
-        state.history = threads;
+        // Always replace with threads from API to ensure latest state
+        state.history = threads || [];
       } else {
-        // Create a map of existing threads to avoid duplicates
+        // Create a map of existing threads to avoid duplicates but allow updates
         const existingThreadsMap = state.history.reduce((map, thread) => {
           map[thread.uuid] = thread;
           return map;
         }, {} as Record<string, ExploreThread>);
 
-        // Add only new threads
+        // Add or update threads from the API
         threads.forEach(thread => {
-          if (!existingThreadsMap[thread.uuid]) {
-            state.history.push(thread);
-          }
+          // Always use the latest data from the API
+          existingThreadsMap[thread.uuid] = thread;
         });
+        
+        // Rebuild history from map
+        state.history = Object.values(existingThreadsMap);
       }
       
-      // Sort by creation time
+      // Sort by creation time (newest first)
       state.history = [...state.history].sort((a, b) => b.createdAt - a.createdAt);
     });
     builder.addCase(fetchUserThreads.rejected, (state) => {

@@ -18,6 +18,10 @@ const neverPersistKeys: (keyof AssistantState)[] = [
   'isSemanticModelLoaded',
   'currentExploreThread',
   'isChatMode',
+  'threadsInitialized', // Don't persist thread initialization status
+  'history', // Don't persist history to force refresh from API
+  'isLoadingThreads',
+  'messageFetchStatus'
 ]
 
 // Create a transform function to filter out specific keys
@@ -54,6 +58,12 @@ const filterTransform = createTransform(
         ...initialState.settings,
         ...mergedState.settings,
       }
+      
+      // Always reset these values to ensure fresh data loading
+      mergedState.threadsInitialized = false;
+      mergedState.history = [];
+      mergedState.isLoadingThreads = false;
+      mergedState.messageFetchStatus = {};
 
       return mergedState
     }
@@ -66,7 +76,7 @@ const persistConfig = {
   version: 1,
   storage,
   whitelist: ['assistant','auth'],
-  transforms: [filterTransform],
+  transforms: [filterTransform]
 }
 
 const rootReducer = combineReducers({
