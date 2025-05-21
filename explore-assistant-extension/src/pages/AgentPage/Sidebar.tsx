@@ -24,18 +24,18 @@ import {
   softDeleteSpecificThreads,
   resetThreadHasMore
 } from '../../slices/assistantSlice'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import SettingsModal from './Settings'
 import { CircularProgress } from '@material-ui/core'
 
 interface SidebarProps {
   expanded: boolean
   toggleDrawer: () => void
-  endOfMessagesRef?: React.RefObject<HTMLDivElement> // Add this prop to receive the ref from parent
+  endOfMessagesRef?: React.RefObject<HTMLDivElement>
 }
 
 const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [isExpanded, setIsExpanded] = React.useState(expanded)
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false)
   const { 
@@ -43,12 +43,11 @@ const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => 
     isQuerying, 
     history, 
     currentExplore, 
-    currentExploreThread, 
     me,
     isLoadingThreads = false,
     messageFetchStatus = {},
     pagination,
-    threadsInitialized = false // Add this to use our new state property
+    threadsInitialized = false
   } = useSelector(
     (state: RootState) => state.assistant as AssistantState,
   )
@@ -56,11 +55,9 @@ const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => 
 
   // Fetch threads on initial load if history is empty and not yet initialized
   useEffect(() => {
-    // Only fetch threads if authenticated, we have user info, and threads haven't been initialized
     if (isAuthenticated && me && !threadsInitialized && !isLoadingThreads) {
-      // Reset pagination first
       dispatch(resetThreadPagination());
-      dispatch(fetchUserThreads());
+      dispatch(fetchUserThreads({ limit: 15, offset: 0 }));
     }
   }, [isAuthenticated, me, threadsInitialized, isLoadingThreads, dispatch]);
 
@@ -79,24 +76,19 @@ const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => 
   const canReset = isChatMode && !isQuerying
 
   const handleNewChat = () => {
-    console.log("In handleNewChat:")
-    console.log(currentExplore)
-    if (canReset) {
+    if (canReset && me) {
       dispatch(newThreadState(me))
         .unwrap()
-        .then((newThread) => {
-          dispatch(resetChat(newThread))
-          dispatch(
-              updateCurrentThreadWithSync({
-                exploreId: currentExplore.exploreId,
-                modelName: currentExplore.modelName,
-                exploreKey: currentExplore.exploreKey,
-              }), () => {
-                console.log(currentExploreThread); // This will be logged after update finishes
-              }
-          )
-        }
-      )
+        .then((newThread: ExploreThread | undefined) => {
+          if (newThread) {
+            dispatch(resetChat(newThread))
+            dispatch(updateCurrentThreadWithSync({
+              exploreId: currentExplore.exploreId,
+              modelName: currentExplore.modelName,
+              exploreKey: currentExplore.exploreKey,
+            }))
+          }
+        })
     }
   }
 
@@ -153,41 +145,32 @@ const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => 
   };
 
   const handleClearHistory = () => {
-    // Extract thread IDs from history
     const threadIds = history.map(thread => parseInt(thread.uuid));
     
-    // Only proceed if there are threads to delete
-    if (threadIds.length > 0) {
-      // First soft delete on the backend
+    if (threadIds.length > 0 && me) {
       dispatch(softDeleteSpecificThreads(threadIds))
         .unwrap()
         .then(() => {
-          // Then clear the local state
           dispatch(clearHistory());
           dispatch(resetThreadPagination());
           dispatch(resetThreadHasMore())
           dispatch(newThreadState(me))
-          .unwrap()
-          .then((newThread) => {
-            dispatch(resetChat(newThread))
-            dispatch(
-                updateCurrentThreadWithSync({
+            .unwrap()
+            .then((newThread: ExploreThread | undefined) => {
+              if (newThread) {
+                dispatch(resetChat(newThread))
+                dispatch(updateCurrentThreadWithSync({
                   exploreId: currentExplore.exploreId,
                   modelName: currentExplore.modelName,
                   exploreKey: currentExplore.exploreKey,
-                }), () => {
-                  console.log(currentExploreThread); // This will be logged after update finishes
-                }
-            )
-          }
-        )
+                }))
+              }
+            })
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           console.error('Failed to clear history:', error);
-          // Optionally show an error message to the user
         });
     } else {
-      // If no threads, just clear the local state
       dispatch(clearHistory());
       dispatch(resetThreadPagination());
     }
@@ -322,11 +305,9 @@ const Sidebar = ({ expanded, toggleDrawer, endOfMessagesRef }: SidebarProps) => 
               {pagination && pagination.threads.hasMore && (
                 <div className="flex justify-center mt-4">
                   <button
-                    variant="text"
-                    size="small"
                     onClick={handleLoadMoreThreads}
                     disabled={isLoadingThreads}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 hover:text-blue-700 px-4 py-2 rounded"
                   >
                     {isLoadingThreads ? (
                       <CircularProgress size={16} className="mr-2" />

@@ -67,6 +67,13 @@ const persistConfig = {
   storage,
   whitelist: ['assistant','auth'],
   transforms: [filterTransform],
+  timeout: 10000,
+  stateReconciler: (inboundState: any, originalState: any) => {
+    if (inboundState?.assistant?.history?.length > originalState?.assistant?.history?.length) {
+      return inboundState;
+    }
+    return originalState;
+  }
 }
 
 const rootReducer = combineReducers({
@@ -74,7 +81,7 @@ const rootReducer = combineReducers({
   auth: authSlice.reducer
 })
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedReducer = persistReducer(persistConfig, rootReducer as any)
 
 export const store = configureStore({
   reducer: persistedReducer,
