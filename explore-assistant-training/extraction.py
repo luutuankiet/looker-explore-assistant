@@ -9,8 +9,8 @@ import re
 
 sdk = looker_sdk.init40('looker.ini')
 
-project_id = 'looker-private-demo' # @param {type:"string"}
-location = 'us-central1' # @param {type:"string"}
+project_id = 'joon-sandbox' # @param {type:"string"}
+location = 'global' # @param {type:"string"}
 
 prompt = '''You are a specialized assistant that translates Looker Explore query URL's into natural language questions. By reading the different parameters of the url (like the fields used, filters, etc.) you are able to generate a natural language question.
 Please keep these responses short and concise using 1-2 sentences max in your repsonse. Make sure to generate a response that sounds like it's coming from an average person and not a data analyst who is very familiar with the data. Each request will contain an "input" and an "output" field. The "output" field will be the Looker Explore query url. The "input" field will be the natural language question that you will fill in/generate. Here is an example of a properly formatted response:
@@ -22,7 +22,7 @@ parameters = {"max_output_tokens": 2500, "temperature": 0.2, "candidate_count": 
 vertexai.init(project=project_id, location=location)
 
 def generate_input(request):
-    model = GenerativeModel("gemini-pro")
+    model = GenerativeModel("gemini-2.5-flash-lite-preview-06-17")
     # make prediction to generate Looker Explore URL
     response =  model.generate_content(
         contents=prompt + request,
@@ -65,8 +65,8 @@ def formatExploreMetadata(data):
   """
 
 
-model = 'thelook' # @param {type:"string"}
-explore = 'order_items' # @param {type:"string"}
+model = 'bkg_spoke' # @param {type:"string"}
+explore = 'dms_bkg_cntr_mig' # @param {type:"string"}
 
 data = fetchExploreMetadata(model, explore, 'fields')
 
@@ -115,7 +115,8 @@ def fetchQueryUrlMetadata(explore: str):
               "query.sorts",
               "query.limit",
               "query.column_limit",
-              "query.count"
+              "query.count",
+              "history.count"
             ],
             pivots=None,
             fill_fields=None,
@@ -125,10 +126,11 @@ def fetchQueryUrlMetadata(explore: str):
               # "user.email":""
             },
             filter_expression=None,
-            sorts=[
-              "history.completed_time desc"
-              "query.view"
-            ],
+            sorts = [],
+            # sorts=[
+            #   "history.count desc"
+            #   "query.view"
+            # ],
             limit="10",
         )
     )
@@ -249,7 +251,7 @@ def explore_url_categorization(data):
 
 
 
-data = fetchQueryUrlMetadata('order_items')
+data = fetchQueryUrlMetadata('dms_bkg_cntr_mig')
 # categorization =
 categorized_queries = explore_url_categorization(data)
 

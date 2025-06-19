@@ -26,11 +26,20 @@
             "webRoot": "${workspaceFolder}/explore-assistant-extension/src",
             "sourceMaps": true,
             "sourceMapPathOverrides": {
-              "webpack:///*": "${workspaceFolder}/explore-assistant-extension/*",
-              "webpack:///src/*": "${workspaceFolder}/explore-assistant-extension/src/*",
-              "webpack://./*": "${workspaceFolder}/explore-assistant-extension/*"
+                "webpack:///*": "${workspaceFolder}/explore-assistant-extension/*",
+                "webpack:///src/*": "${workspaceFolder}/explore-assistant-extension/src/*",
+                "webpack://./*": "${workspaceFolder}/explore-assistant-extension/*"
             },
             "trace": true
-          }        
+        },
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/explore-assistant-training/.venv/bin/python",
+            "cwd": "${workspaceFolder}/explore-assistant-training"
+        }
     ]
 }
