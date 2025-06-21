@@ -49,6 +49,16 @@ variable "cloudSQL_server_name" {
   description = "prefix the cloud run use to source cloud sql secrets for db connection"
 }
 
+variable "restrict_group_access" {
+  type        = bool
+}
+
+variable "restrict_group_id" {
+  type        = string
+}
+
+
+
 resource "google_service_account" "explore_assistant_sa" {
   account_id   = var.explore-assistant-cr-sa-id
   display_name = "Looker Explore Assistant Cloud Run SA"
@@ -174,6 +184,14 @@ resource "google_cloud_run_v2_service" "default" {
       env {
         name  = "LOOKER_API_URL"
         value = var.looker_api_url
+      }
+      env {
+        name  = "RESTRICT_GROUP_ACCESS"
+        value = var.restrict_group_access
+      }
+      env {
+        name  = "RESTRICT_GROUP_ID"
+        value = var.restrict_group_id
       }
     }
     service_account = google_service_account.explore_assistant_sa.email

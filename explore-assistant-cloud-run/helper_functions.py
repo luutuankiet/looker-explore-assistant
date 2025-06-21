@@ -13,6 +13,9 @@ from typing import Dict, Any, List, Optional, Tuple, Sequence
 from sqlmodel import Session, select, func, desc, asc
 from models import User, Thread, Message, Feedback
 from database import engine
+import looker_sdk
+from looker_sdk.sdk.api40.models import User as LookerUser
+from looker_sdk.error import SDKError
 
 
 load_dotenv()
@@ -32,6 +35,8 @@ MODEL_NAME = os.getenv("MODEL_NAME", "gemini-1.5-pro-002")
 OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
 VERTEX_CF_AUTH_TOKEN = os.environ.get("VERTEX_CF_AUTH_TOKEN")
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN")
+RESTRICT_GROUP_ACCESS = os.environ.get("RESTRICT_GROUP_ACCESS") == "1"
+RESTRICT_GROUP_ID = os.environ.get("RESTRICT_GROUP_ID")
 
 if (
     not PROJECT or
@@ -47,6 +52,15 @@ logging.basicConfig(level=logging.INFO)
 # Initialize the Vertex AI model globally
 vertexai.init(project=PROJECT, location=REGION)
 model = GenerativeModel(MODEL_NAME)
+
+
+# init looker sdk
+os.environ["LOOKERSDK_CLIENT_ID"] = LOOKER_CLIENT_ID
+os.environ["LOOKERSDK_CLIENT_SECRET"] = LOOKER_CLIENT_SECRET
+os.environ["LOOKERSDK_BASE_URL"] = LOOKER_API_URL
+sdk = looker_sdk.init40()
+
+
 
 
 class DatabaseError(Exception):
@@ -78,15 +92,24 @@ def validate_bearer_token(token: str) -> bool:
     return False
 
 def verify_looker_user(user_id: str) -> bool:
-    looker_api_url = f"{LOOKER_API_URL}/user/{user_id}"
-    auth = HTTPBasicAuth(LOOKER_CLIENT_ID, LOOKER_CLIENT_SECRET)
-    response = requests.get(looker_api_url, auth=auth)
-    
-    if response.status_code == 200:
-        return True
-        
-    logging.warning(f"Looker user verification failed for user {user_id}: {response.status_code} {response.text}")
-    return False
+    try :
+        user : LookerUser = sdk.user(user_id=user_id)
+        if not RESTRICT_GROUP_ACCESS:
+            return True
+
+        elif user.group_ids and RESTRICT_GROUP_ID in user.group_ids:
+            return True
+        else:
+            # User is NOT in the approved group, raise an error
+            raise DatabaseError(
+                "User verification failed.",
+                'The extension has restricted user access.'
+                f'User id {user_id} is not included in approved group {RESTRICT_GROUP_ID}.'
+            )
+
+    except SDKError as e:
+        logging.warning(f"Looker user verification failed for user {user_id}: {e.message}")
+        return False
 
 def get_user_from_db(user_id: str) -> Optional[Dict]:
     with Session(engine) as session:
