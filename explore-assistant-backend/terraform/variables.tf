@@ -105,6 +105,18 @@ variable "looker_api_url" {
   description = "api url to validate users against"
 }
 
+variable "restrict_group_access" {
+  type        = bool
+  description = "Set to true to enable Looker group access restriction for the extension."
+  default     = false
+}
+
+variable "looker_restricted_group_name" {
+  type        = string
+  description = "The name of the Looker group to be used for access restriction."
+  default     = "Explore Assistant Extension Users"
+}
+
 #
 # BIGQUERY VARIABLES
 #

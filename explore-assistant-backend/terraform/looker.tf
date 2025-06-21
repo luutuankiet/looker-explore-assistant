@@ -77,3 +77,9 @@ resource "looker_lookml_model" "explore_assistant_performance_monitoring_model" 
   allowed_db_connection_names = [looker_connection.looker_bq_connection[0].name]
   depends_on                  = [looker_project.explore_assistant_performance_monitoring_project]
 }
+
+resource "looker_group" "restricted_group" {
+  count             = var.restrict_group_access ? 1 : 0
+  name              = var.looker_restricted_group_name
+  delete_on_destroy = true
+}

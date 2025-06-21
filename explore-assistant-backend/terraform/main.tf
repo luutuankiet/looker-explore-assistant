@@ -111,6 +111,8 @@ module "cloud_run_backend" {
   looker_client_id                     = var.looker_client_id
   looker_client_secret                 = var.looker_client_secret
   looker_api_url                       = var.looker_api_url
+  restrict_group_id                    = (var.deploy_looker_projects && var.restrict_group_access) ? looker_group.restricted_group[0].id : ""
+  restrict_group_access                = var.restrict_group_access
 
   depends_on = [module.cloud_sql, time_sleep.wait_after_apis_activate]
 }
